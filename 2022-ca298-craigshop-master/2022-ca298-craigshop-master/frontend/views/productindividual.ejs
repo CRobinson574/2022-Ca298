@@ -1,0 +1,114 @@
+<%- include('header') -%>
+
+<!-- html and <script> tags specific to a page go here -->
+
+<html>
+    <head>
+        <title>Product page</title>
+    </head>
+
+    <body>
+
+        <div id="main-cont"></div>
+        <p id="product"></p>
+
+    </body>
+    
+
+
+</html>
+
+<script>
+
+    window.onload = ()=>{
+	    let params = window.location.search;
+        let urlParams = new URLSearchParams(params);
+        let productID = urlParams.get("id");
+        // http://127.0.0.1:8000/api/products/id 
+        if(productID != null && typeof(productID)!= 'undefined'){
+            fetch('http://127.0.0.1:8000/api/products/'+productID)
+            .then(resp => resp.json())
+            .then(data  => {
+                console.log(data);
+                if('detail' in data){
+                // display some generic product not found error
+                }
+                else{
+                    let productImg = data.product_image;
+                    let productName = data.name;
+                    let prodDesc = data.description;
+                    let productPrice = data.price;
+
+                    let name = document.createElement("p");
+                    name.innerHTML = productName;
+                    product.appendChild(name);
+
+                    let imageView = document.createElement("img");
+                    imageView.src = productImg;
+                    product.appendChild(imageView);
+
+                    let price = document.createElement("p");
+                    productPrice = "€" + productPrice;
+                    price.innerHTML = productPrice;
+                    product.appendChild(price);
+
+                    let desc = document.createElement("p");
+                    desc.innerHTML = prodDesc;
+                    product.appendChild(desc);
+
+
+                    let addToCart = document.createElement("button"); // create a button
+                    addToCart.innerHTML = "Add to cart"; // set the text of the button
+                    product.appendChild(addToCart); 
+                    addToCart.onclick = ()=>{
+                    // code for when the button is clicked
+	                fetch('http://127.0.0.1:8000/apiadd/', {
+		                method: 'POST',
+		                headers: {
+			                'Accept': 'application/json',
+			                'Content-Type': 'application/json',
+			                'Authorization': 'Bearer '+localStorage.getItem("access")
+		                },
+		                body: JSON.stringify({
+			            "product_id": parseInt(productID)
+		                })
+	                })
+	                .then(response=>response.json())
+	                .then(data=>{
+			        // display an add to cart success message
+                        alert("Success!");
+			            console.log(data)
+		            });
+
+
+                    console.log(element);
+                    let tmpLi = document.createElement("li");
+                    let link = document.createElement("a");
+                    link.innerHTML = element['name']; // <a>Bread</a>
+                    // /products?id=x
+                    let productStr = "/productindividual?id=" + element['id'];
+                    tmpLi.appendChild(link);
+                    console.log(productStr);
+                    link.href = productStr;
+                    document.getElementById("main-cont").appendChild(tmpLi)
+                    
+
+                    idElement.innerHTML = element["id"];
+                    nameElement.innerHTML = element["name"];
+                    descElement.innerHTML = element["description"];
+                    priceElement.innerHTML = element["price"];
+                    imageElement.innerHTML = element["product_image"];
+
+                }
+            }
+            });
+        }
+    }
+
+    
+
+
+
+    </script>
+
+<%- include('footer') -%>

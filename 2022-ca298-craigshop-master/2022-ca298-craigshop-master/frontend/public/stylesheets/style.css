@@ -1,0 +1,19 @@
+/* 
+  Not much styling as I ran out of time trying to make other things work correctly
+*/
+
+body {
+  background-color: #fc9595;
+  color: #ffffff;
+  padding: 50px;
+  
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #ffffff;
+}
+
+.nav-item{
+  color: #ffffff;
+}

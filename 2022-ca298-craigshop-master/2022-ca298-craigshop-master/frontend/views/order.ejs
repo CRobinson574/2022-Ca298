@@ -1,0 +1,93 @@
+<%- include('header') -%>
+
+<!-- html and <script> tags specific to a page go here -->
+
+<head>
+    <title>Order</title>
+</head>
+
+<body>
+    <h1>Order Details</h1>
+
+    <form id="order-form">
+        <label for ="shipping_address-input">Shipping Adress:</label>
+        <input type ="text" name="shipping_address-input" id="shipping_address" placeholder="Your Shipping Address" required>
+        <button type ="submit">Order Now</button>
+    </form>
+
+
+</body>
+
+<script>
+    fetch("http://127.0.0.1:8000/api/basket/", {
+        method: 'GET',
+		headers: {
+		    'Accept': 'application/json',
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer '+ localStorage.getItem("access")
+		},
+    })
+        .then(response => response.json())
+        .then(data => data.forEach(element => {
+            let products = element.items
+            let basketId = element.id
+            console.log(basketId)
+            products.forEach(i => {
+                let productPrice = i.item_price
+                let productQuantity = i.quantity
+                let productImage = i.image_link
+                let productName = i.item_name
+                let productId = i.product_id
+                console.log(productPrice, productQuantity, productImage, productName, productId)
+
+                let img = document.createElement("img")
+                img.src = "http://127.0.0.1:8000/products/" + productImage
+                img.width = 282
+                img.height = 200
+                productlist.appendChild(img);
+
+                let name = document.createElement("p")
+                name.innerHTML = productName
+                productlist.appendChild(name);
+
+                let quantity = document.createElement("p")
+                productQuantity = "Quantity " + productQuantity
+                quantity.innerHTML = productQuantity
+                productlist.appendChild(quantity);
+
+                let price = document.createElement("p")
+                productPrice = "€" + productPrice
+                price.innerHTML = productPrice
+                productlist.appendChild(price);
+
+                let form = document.getElementById('order-form');
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    let shipping_address = document.getElementById("shipping_address").value;
+                    console.log(basketId,shipping_address)
+	                fetch('http://127.0.0.1:8000/apicheckout/', {
+		                method: 'POST',
+		                headers: {
+			                'Accept': 'application/json',
+			                'Content-Type': 'application/json',
+			                'Authorization': 'Bearer '+ localStorage.getItem("access")
+		                },
+		                body: JSON.stringify({basket_id: basketId, shipping_addr: shipping_address})
+            	    })
+                    .then(response => response.json())
+                    .then(data=>{
+                        console.log(data)
+                        alert("Order Placed")
+                        window.location.href = "/";
+                    })
+                })
+                    
+            })
+            })
+        );
+  </script>
+
+
+
+
+<%- include('footer') -%>

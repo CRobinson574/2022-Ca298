@@ -1,0 +1,90 @@
+<%- include('header') -%>
+
+<!-- html and <script> tags specific to a page go here -->
+
+<head>
+    <title>Basket</title>
+</head>
+
+<body>
+    <p id="productlist"></p>
+    <a href="/order">Checkout</a>
+
+</body>
+
+<script>
+fetch("http://127.0.0.1:8000/api/basket/", {
+    method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+ localStorage.getItem("access")
+        },
+})
+.then(response => response.json())
+.then(data => data.forEach(element => {
+    let products = element.items
+    console.log(products.length)
+    if(products.length == 0){
+      document.getElementById("empty").innerHTML = ""
+      let emptyBasket = document.createElement("p")
+      emptyBasket.innerHTML = "Your basket is empty!"
+      //productlist.appendChild(emptyBasket);
+    }
+      products.forEach(i => {
+      let productPrice = i.price
+      let productQuantity = i.quantity
+      let productImage = i.product_image
+      let productName = i.name
+      let productId = i.product_id
+      console.log(productPrice, productQuantity, productImage, productId)
+
+
+      //Cannot get this to work at all 
+      let img = document.createElement("img")
+      img.src = "http://127.0.0.1:8000/api/basket/" + productImage
+      productlist.appendChild(img);
+
+            let name = document.createElement("p")
+            name.innerHTML = productName
+            productlist.appendChild(name);
+
+            let quantity = document.createElement("p")
+            productQuantity = "Quantity " + productQuantity
+            quantity.innerHTML = productQuantity
+            productlist.appendChild(quantity);
+
+            let price = document.createElement("p")
+            productPrice = "Price €" + productPrice
+            price.innerHTML = productPrice
+            productlist.appendChild(price);
+
+            let removeFromCart = document.createElement("button");
+            removeFromCart.innerHTML = "Remove";
+            productlist.appendChild(removeFromCart)
+            
+            removeFromCart.onclick = ()=>{
+                fetch('http://127.0.0.1:8000/apiremove/', {
+                    method: 'POST',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer '+ localStorage.getItem("access")
+                    },
+                  body: JSON.stringify({
+                    "product_id": parseInt(productId)
+                  })
+                })
+                .then(response=>response.json())
+                .then(data=>{
+                window.location.reload()
+                      console.log(data)
+                  });
+              }
+      })
+})
+);  
+</script>
+
+
+<%- include('footer') -%>

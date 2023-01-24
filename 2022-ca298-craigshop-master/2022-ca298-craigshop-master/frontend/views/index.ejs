@@ -1,0 +1,73 @@
+<%- include('header') -%>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CraigShop</title>
+  </head>
+  <body>
+    <h1>CraigShop</h1>
+    <p>Welcome to CraigShop</p>
+    <p>Click the name of the item at the bottom of the page to view the product.</p>
+    <p>From there you can add it to your cart</p>
+    
+    <div id="main-cont">
+    
+      <ul id="productlist">
+        
+      </ul> 
+    </div>
+
+
+    <script>
+
+      let list = document.getElementById("productlist");
+
+
+      fetch("http://127.0.0.1:8000/api/products/")
+            .then(resp => resp.json())
+            .then(data => {
+                data.forEach(element => {
+                    // create a li element for each 
+                    let productImg = element["product_image"];
+                    let idElement = document.createElement("li");
+                    let nameElement = document.createElement("li");
+                    let descElement = document.createElement("li");
+                    let priceElement = document.createElement("li");
+                    let imageElement = document.createElement("li");
+
+                    let imageView = document.createElement("img");
+                    imageView.src = productImg;
+                    imageView.id = "productImg";
+
+
+                    console.log(element);
+                    let tmpLi = document.createElement("li");
+                    let link = document.createElement("a");
+                    link.innerHTML = element['name'];
+
+                    let productStr = "/productindividual?id=" + element['id'];
+                    tmpLi.appendChild(link);
+                    console.log(productStr);
+                    link.href = productStr;
+                    document.getElementById("main-cont").appendChild(tmpLi)
+                    
+
+                    idElement.innerHTML = element["id"];
+                    nameElement.innerHTML = element["name"];
+                    descElement.innerHTML = element["description"];
+                    priceElement.innerHTML = element["price"];
+                    imageElement.innerHTML = element["product_image"];
+
+
+                    list.appendChild(descElement);
+                    list.appendChild(priceElement);
+                    list.appendChild(imageView);
+
+                });
+            })
+    </script>
+  </body>
+</html>
+
+<%- include('footer') -%>
